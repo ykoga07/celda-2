@@ -32,7 +32,7 @@
 #'  are solely defined by the absence of markers. Default is TRUE.
 #' @param consecutiveOneoff Logical. Whether or not to allow one-off splits at
 #'  consecutive brances. Default is FALSE.
-#' @param autoMetaclusters. Logical. Whether to identify metaclusters prior to
+#' @param autoMetaclusters Logical. Whether to identify metaclusters prior to
 #'  creating the tree based on the distance between clusters in a UMAP 
 #'  dimensionality reduction projection. A metacluster is simply a large
 #'  cluster that includes several clusters within it. Default is TRUE.
@@ -2339,18 +2339,21 @@ subUnderscore <- function(x, n) unlist(lapply(
 #' @param boxColor Character value. Color of rule labels. Default is black.
 #' @examples
 #' # Generate simulated single-cell dataset using celda 
-#' sim_counts <- celda::simulateCells("celda_CG", K = 4, L = 10, G = 100)
+#' sce <- celda::simulateCells("celda_CG", K = 4, L = 10, G = 100)
+#' 
+#' # Select top features
+#' sce <- selectFeatures(sce)
 #' 
 #' # Celda clustering into 5 clusters & 10 modules
-#' cm <- celda_CG(sim_counts$counts, K=5, L=10, verbose=FALSE)
+#' sce <- celda_CG(sce, K=5, L=10, verbose=FALSE)
 #' 
 #' # Get features matrix and cluster assignments
-#' factorized <- factorizeMatrix(sim_counts$counts, cm)
-#' features <- factorized$proportions$cell
-#' class <- clusters(cm)$z
+#' factorizedCounts <- factorizeMatrix(sce, type = "counts")
+#' featureMatrix <- factorizedCounts$counts$cell
+#' classes <- as.integer(celdaClusters(sce))
 #' 
 #' # Generate Decision Tree
-#' DecTree <- findMarkersTree(features,class,threshold = 1)
+#' DecTree <- findMarkersTree(featureMatrix, classes)
 #' 
 #' # Plot dendrogram
 #' plotDendro(DecTree)
@@ -2634,23 +2637,25 @@ plotDendro <- function(tree,
 #' @return A heatmap visualizing the counts matrix for the cells and genes at
 #' the specified branch point.
 #' @examples
-#' # Generate simulated single-cell dataset using celda 
-#' sim_counts <- celda::simulateCells("celda_CG", K = 4, L = 10, G = 100)
+#' sce <- celda::simulateCells("celda_CG", K = 4, L = 10, G = 100)
+#' 
+#' # Select top features
+#' sce <- selectFeatures(sce)
 #' 
 #' # Celda clustering into 5 clusters & 10 modules
-#' cm <- celda_CG(sim_counts$counts, K=5, L=10, verbose=FALSE)
+#' sce <- celda_CG(sce, K=5, L=10, verbose=FALSE)
 #' 
 #' # Get features matrix and cluster assignments
-#' factorized <- factorizeMatrix(sim_counts$counts, cm)
-#' features <- factorized$proportions$cell
-#' class <- clusters(cm)$z
+#' factorizedCounts <- factorizeMatrix(sce, type = "counts")
+#' featureMatrix <- factorizedCounts$counts$cell
+#' classes <- as.integer(celdaClusters(sce))
 #' 
 #' # Generate Decision Tree
-#' DecTree <- findMarkersTree(features,class,threshold = 1)
+#' DecTree <- findMarkersTree(featureMatrix, classes)
 #' 
 #' # Plot example heatmap
-#' plotMarkerHeatmap(DecTree, sim_counts$counts, branchPoint = "top_level",
-#' featureLabels = paste0("L",clusters(cm)$y))
+#' plotMarkerHeatmap(DecTree, featureMatrix, branchPoint = "top_level", 
+#'   featureLabels = rownames(featureMatrix))
 #' 
 #' @export
 plotMarkerHeatmap <- function(tree, counts, branchPoint, featureLabels,

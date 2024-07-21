@@ -41,18 +41,21 @@ Generates a dendrogram of the rules and performance
 }
 \examples{
 # Generate simulated single-cell dataset using celda 
-sim_counts <- celda::simulateCells("celda_CG", K = 4, L = 10, G = 100)
+sce <- celda::simulateCells("celda_CG", K = 4, L = 10, G = 100)
+
+# Select top features
+sce <- selectFeatures(sce)
 
 # Celda clustering into 5 clusters & 10 modules
-cm <- celda_CG(sim_counts$counts, K=5, L=10, verbose=FALSE)
+sce <- celda_CG(sce, K=5, L=10, verbose=FALSE)
 
 # Get features matrix and cluster assignments
-factorized <- factorizeMatrix(sim_counts$counts, cm)
-features <- factorized$proportions$cell
-class <- clusters(cm)$z
+factorizedCounts <- factorizeMatrix(sce, type = "counts")
+featureMatrix <- factorizedCounts$counts$cell
+classes <- as.integer(celdaClusters(sce))
 
 # Generate Decision Tree
-DecTree <- findMarkersTree(features,class,threshold = 1)
+DecTree <- findMarkersTree(featureMatrix, classes)
 
 # Plot dendrogram
 plotDendro(DecTree)
