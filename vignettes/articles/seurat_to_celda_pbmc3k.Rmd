@@ -107,15 +107,11 @@ reducedDim(sce, "factorizeMatrix") <- t(factorizedLogcounts)
 sce <- runFindMarker(sce, useReducedDim = "factorizeMatrix", cluster = "seurat_clusters", useAssay = NULL)
 ```
 
-The differential expression results are contained within `sce@metadata$findMarker`. The `Gene` column denotes the differentially expressed module, whilst the `Log2_FC` column denotes the level of upregulation of the module in the cluster. These results can be accessed through the `getFindMarkerTopTable` function.
-
-```{r, eval = FALSE}
-getFindMarkerTopTable(sce)
-```
+The differential expression results are contained within the metadata slot `findMarker`. The `Gene` column denotes the differentially expressed module, whilst the `Log2_FC` column denotes the level of upregulation of the module in the cluster. 
 
 
 ```{r DE module table, message=FALSE, echo = FALSE}
-kable(sce@metadata$findMarker, style = "html", row.names = FALSE) %>%
+kable(metadata(sce)$findMarker, style = "html", row.names = FALSE) %>%
                  kable_styling(bootstrap_options = "striped") %>%
                  scroll_box(width = "100%", height = "500px")
 ```
